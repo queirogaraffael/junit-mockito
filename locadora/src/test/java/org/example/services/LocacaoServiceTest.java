@@ -20,10 +20,10 @@ public class LocacaoServiceTest {
     public ErrorCollector error = new ErrorCollector();
 
     @Test
-    public void alugaFilmesComSucesso() {
+    public void alugaFilmesComSucessoTest() {
         // Cenário
         Set<Filme> filmes = new HashSet<>(Arrays.asList(
-                new Filme("Me Chame Pelo Seu Nome", 10, 15.0),
+                new Filme("Titanic", 10, 15.0),
                 new Filme("Interestelar", 12, 20.0),
                 new Filme("Clube da Luta", 18, 18.5),
                 new Filme("O Poderoso Chefão", 16, 25.0),
@@ -37,12 +37,28 @@ public class LocacaoServiceTest {
 
         // Validações usando ErrorCollector
         error.checkThat("A locação não deveria ser nula", locacao, notNullValue());
-        error.checkThat("O valor da locação está incorreto", locacao.getValor(), is(100.5));
+        error.checkThat("O valor da locação está incorreto", locacao.getValor(), is(50.25));
         error.checkThat("O usuário da locação está incorreto", locacao.getUsuario(), is(usuario));
         error.checkThat("A quantidade de filmes na locação está incorreta", locacao.getFilmes().size(), is(5));
     }
 
+    @Test
+    public void alugarFilmesComDescontoTest() {
+        // Cenário
+        Set<Filme> filmes = new HashSet<>(Arrays.asList(
+                new Filme("O Poderoso Chefão", 1
+                        6, 25.0),
+                new Filme("A Origem", 14, 22.0)
+        ));
+        Usuario usuario = new Usuario("Raffael", "1234567890");
+        LocacaoService locacaoService = new LocacaoService();
 
+        // Ação
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        // Validações
+        error.checkThat("O valor da locação está incorreto", locacao.getValor(), is(37.6));
+    }
 
 
     //
@@ -50,9 +66,6 @@ public class LocacaoServiceTest {
 
     /* 1. Testes de Criação de Locação
 
-
-         // Alugar varios filmes
-         // alugar filmes com descontos
          // domingo nao funciona
 
 
