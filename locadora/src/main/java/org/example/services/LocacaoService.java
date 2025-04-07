@@ -1,22 +1,26 @@
 package org.example.services;
 
-import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
+import org.example.entities.Filme;
+import org.example.entities.Locacao;
+import org.example.entities.Usuario;
 
 import java.util.Date;
+import java.util.Set;
 
-import br.ce.wcaquino.entidades.Filme;
-import br.ce.wcaquino.entidades.Locacao;
-import br.ce.wcaquino.entidades.Usuario;
+import static org.example.utils.DataUtils.adicionarDias;
 
 public class LocacaoService {
 	
-	public Locacao alugarFilme(Usuario usuario, Filme filme) {
+	public Locacao alugarFilme(Usuario usuario, Set<Filme> filmes) {
+
 		Locacao locacao = new Locacao();
-		locacao.setFilme(filme);
+		locacao.setFilmes(filmes);
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
-		locacao.setValor(filme.getPrecoLocacao());
-		
+
+		double valorTotalFilmes = filmes.stream().mapToDouble(Filme::getPrecoLocacao).sum();
+		locacao.setValor(valorTotalFilmes);
+
 		//Entrega no dia seguinte
 		Date dataEntrega = new Date();
 		dataEntrega = adicionarDias(dataEntrega, 1);
