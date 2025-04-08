@@ -3,9 +3,11 @@ package org.example.services;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
+import org.example.exceptions.UsuarioInvalidoException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,11 +15,15 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LocacaoServiceTest {
 
     @Rule
     public ErrorCollector error = new ErrorCollector();
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void alugaFilmesComSucessoTest() {
@@ -46,8 +52,7 @@ public class LocacaoServiceTest {
     public void alugarFilmesComDescontoTest() {
         // Cenário
         Set<Filme> filmes = new HashSet<>(Arrays.asList(
-                new Filme("O Poderoso Chefão", 1
-                        6, 25.0),
+                new Filme("O Poderoso Chefão", 16, 25.0),
                 new Filme("A Origem", 14, 22.0)
         ));
         Usuario usuario = new Usuario("Raffael", "1234567890");
@@ -57,10 +62,41 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         // Validações
-        error.checkThat("O valor da locação está incorreto", locacao.getValor(), is(37.6));
+
+        assertThat("O valor da locação está incorreto", locacao.getValor(), is(37.6));
     }
 
+    @Test
+    public void deveLancarExcecaoQuandoUsuarioForInvalido() throws Exception {
+        // Cenário: Usuario invalido
+        Usuario usuario = null;
+        Set<Filme> filmes = new HashSet<>(Arrays.asList(
+                new Filme("O Poderoso Chefão", 16, 25.0)
+        ));
+        LocacaoService service = new LocacaoService();
 
+        // Configura a exceção esperada e a mensagem
+        exception.expect(UsuarioInvalidoException.class);
+        exception.expectMessage("Usuario invalido!");
+
+        // Ação: Deve lançar a exceção configurada
+        service.alugarFilme(usuario, filmes);
+    }
+
+    @Test
+    public void deveLancarExcecaoQuandoFilmeForNuloOuVazio() throws Exception {
+        // Cenário: Usuario invalido
+        Usuario usuario = new Usuario("Raffael", "1234567890");
+        Set<Filme> filmes = null;
+        LocacaoService service = new LocacaoService();
+
+        // Configura a exceção esperada e a mensagem
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("A lista de filmes não pode estar vazia.");
+
+        // Ação: Deve lançar a exceção configurada
+        service.alu"A lista de filmes não pode estar vazia."garFilme(usuario, filmes);
+    }
     //
 
 
@@ -77,7 +113,7 @@ public class LocacaoServiceTest {
 
     Deve registrar a data correta de início e fim da locação.
 
-    Deve calcular corretamente o preço do aluguel.
+    // Não deve permitir alugar se filme nao tiver estoque
 
 2. Testes de Regras de Negócio
 
@@ -97,14 +133,5 @@ public class LocacaoServiceTest {
 
     Não deve aplicar multa se a devolução for feita dentro do prazo.
 
-4. Testes de Exceções e Erros
-
-     Deve lançar uma exceção se um filme não existir.
-
-     Deve lançar uma exceção se um usuário não existir.
-
-     Deve lançar uma exceção se um usuário tentar alugar mais filmes do que o permitido.*?
-
-    */
 
 }

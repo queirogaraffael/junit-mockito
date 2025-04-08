@@ -3,6 +3,7 @@ package org.example.services;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
+import org.example.exceptions.UsuarioInvalidoException;
 
 import java.util.Date;
 import java.util.Set;
@@ -12,6 +13,14 @@ import static org.example.utils.DataUtils.adicionarDias;
 public class LocacaoService {
 	
 	public Locacao alugarFilme(Usuario usuario, Set<Filme> filmes) {
+
+		if(usuario == null){
+			throw new UsuarioInvalidoException("Usuario invalido!");
+		}
+
+		if(filmes == null || filmes.isEmpty()){
+			throw new IllegalArgumentException("A lista de filmes não pode estar vazia.");
+		}
 
 		Locacao locacao = new Locacao();
 		locacao.setFilmes(filmes);
