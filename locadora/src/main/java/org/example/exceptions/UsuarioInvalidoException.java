@@ -3,7 +3,7 @@ package org.example.exceptions;
 public class UsuarioInvalidoException extends RuntimeException {
 
     public UsuarioInvalidoException() {
-        super("Usuário inválido.");
+        super("Usuário invalido.");
     }
 
     public UsuarioInvalidoException(String message) {

@@ -3,6 +3,7 @@ package org.example.services;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
+import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.UsuarioInvalidoException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,12 +68,9 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void deveLancarExcecaoQuandoUsuarioForInvalido() throws Exception {
+    public void deveLancarExcecaoQuandoUsuarioForInvalido() {
         // Cenário: Usuario invalido
-        Usuario usuario = null;
-        Set<Filme> filmes = new HashSet<>(Arrays.asList(
-                new Filme("O Poderoso Chefão", 16, 25.0)
-        ));
+        Set<Filme> filmes = Set.of(new Filme("O Poderoso Chefão", 16, 25.0));
         LocacaoService service = new LocacaoService();
 
         // Configura a exceção esperada e a mensagem
@@ -80,14 +78,13 @@ public class LocacaoServiceTest {
         exception.expectMessage("Usuario invalido!");
 
         // Ação: Deve lançar a exceção configurada
-        service.alugarFilme(usuario, filmes);
+        service.alugarFilme(null, filmes);
     }
 
     @Test
-    public void deveLancarExcecaoQuandoFilmeForNuloOuVazio() throws Exception {
+    public void deveLancarExcecaoQuandoListaDeFilmesForNulaOuVazia (){
         // Cenário: Usuario invalido
         Usuario usuario = new Usuario("Raffael", "1234567890");
-        Set<Filme> filmes = null;
         LocacaoService service = new LocacaoService();
 
         // Configura a exceção esperada e a mensagem
@@ -95,30 +92,39 @@ public class LocacaoServiceTest {
         exception.expectMessage("A lista de filmes não pode estar vazia.");
 
         // Ação: Deve lançar a exceção configurada
-        service.alu"A lista de filmes não pode estar vazia."garFilme(usuario, filmes);
+        service.alugarFilme(usuario, null);
     }
+
+    @Test
+    public void deveLancarExcecaoQuandoHouverFilmesSemEstoque() {
+        // Cenário: Criação do conjunto de filmes, incluindo alguns sem estoque
+        Set<Filme> filmes = new HashSet<>(Arrays.asList(
+                new Filme("Titanic", 0, 15.0),
+                new Filme("Interestelar", 0, 20.0),
+                new Filme("Clube da Luta", 18, 18.5),
+                new Filme("O Poderoso Chefão", 16, 25.0),
+                new Filme("A Origem", 14, 22.0)
+        ));
+        Usuario usuario = new Usuario("Raffael", "1234567890");
+        LocacaoService service = new LocacaoService();
+
+        // Configuração da exceção esperada
+        exception.expect(FilmeSemEstoqueException.class);
+
+        // Ação: Deve lançar a exceção configurada
+        service.alugarFilme(usuario, filmes);
+    }
+
     //
 
 
     /* 1. Testes de Criação de Locação
 
-         // domingo nao funciona
-
-
     Deve permitir que um usuário alugue um filme disponível.
-
-    Não deve permitir locação se o usuário for inválido.
-
-    Não deve permitir locação se o filme não estiver disponível.
 
     Deve registrar a data correta de início e fim da locação.
 
-    // Não deve permitir alugar se filme nao tiver estoque
-
 2. Testes de Regras de Negócio
-
-    Deve aplicar corretamente um desconto caso existam promoções (ex: na locação de múltiplos filmes).
-
     Deve definir corretamente a data de devolução com base no tipo de filme (ex: filmes normais têm 3 dias, lançamentos têm 1 dia).
 
      Deve impedir que um usuário alugue um filme caso tenha locações pendentes ou atrasadas.
@@ -126,6 +132,7 @@ public class LocacaoServiceTest {
     Deve permitir que um usuário com histórico limpo alugue um novo filme.
 
 3. Testes de Devolução e Multas
+      domingo nao funciona
 
      Deve calcular multa corretamente caso a devolução ocorra após a data prevista.
 
@@ -133,5 +140,6 @@ public class LocacaoServiceTest {
 
     Não deve aplicar multa se a devolução for feita dentro do prazo.
 
+*/
 
 }

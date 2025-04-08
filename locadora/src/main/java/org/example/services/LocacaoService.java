@@ -3,10 +3,12 @@ package org.example.services;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
+import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.UsuarioInvalidoException;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.example.utils.DataUtils.adicionarDias;
 
@@ -21,6 +23,9 @@ public class LocacaoService {
 		if(filmes == null || filmes.isEmpty()){
 			throw new IllegalArgumentException("A lista de filmes não pode estar vazia.");
 		}
+
+		// Valida se ha estoque para o(s) filme(s)
+		validaSeHaEstoque(filmes);
 
 		Locacao locacao = new Locacao();
 		locacao.setFilmes(filmes);
@@ -61,6 +66,17 @@ public class LocacaoService {
 		}
 
 		return total * desconto;
+	}
+
+	private void validaSeHaEstoque(Set<Filme> filmes) {
+		Set<Filme> filmesSemEstoque = filmes.stream()
+				.filter(filme -> filme.getEstoque() == 0)
+				.collect(Collectors.toSet());
+
+		if (!filmesSemEstoque.isEmpty()) {
+			throw new FilmeSemEstoqueException("Os seguintes filmes estão sem estoque: "
+					+ filmesSemEstoque.stream().map(Filme::getNome).collect(Collectors.joining(", ")));
+		}
 	}
 
 }
