@@ -13,10 +13,6 @@ public class DataUtils {
 	/**
 	 * Retorna a data enviada por parametro com a adição dos dias desejado
 	 * 	a Data pode estar no futuro (dias > 0) ou no passado (dias < 0)
-	 * 
-	 * @param data
-	 * @param dias
-	 * @return
 	 */
 	public static Date adicionarDias(Date data, int dias) {
 		Calendar calendar = Calendar.getInstance();

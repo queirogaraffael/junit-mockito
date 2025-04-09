@@ -1,10 +1,12 @@
 package org.example.services;
 
+import org.example.daos.LocacaoDao;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.UsuarioInvalidoException;
+import org.example.utils.SPCService;
 
 import java.util.Date;
 import java.util.Set;
@@ -13,7 +15,15 @@ import java.util.stream.Collectors;
 import static org.example.utils.DataUtils.adicionarDias;
 
 public class LocacaoService {
-	
+
+	private LocacaoDao locacaoDao;
+	private SPCService spcService;
+
+	public LocacaoService(LocacaoDao locacaoDao, SPCService spcService) {
+		this.locacaoDao = locacaoDao;
+		this.spcService = spcService;
+	}
+
 	public Locacao alugarFilme(Usuario usuario, Set<Filme> filmes) {
 
 		if(usuario == null){
@@ -40,9 +50,9 @@ public class LocacaoService {
 		dataEntrega = adicionarDias(dataEntrega, 1);
 		locacao.setDataRetorno(dataEntrega);
 		
-		//Salvando a locacao...	
-		//TODO adicionar método para salvar
-		
+		//Salvar locacao
+		locacaoDao.salva(locacao);
+
 		return locacao;
 	}
 

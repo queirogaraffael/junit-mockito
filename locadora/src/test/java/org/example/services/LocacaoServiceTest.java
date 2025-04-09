@@ -1,10 +1,12 @@
 package org.example.services;
 
+import org.example.daos.LocacaoDao;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.UsuarioInvalidoException;
+import org.example.utils.SPCService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -19,6 +21,10 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LocacaoServiceTest {
+
+    private LocacaoDao locacaoDao;
+    private SPCService spcService;
+    private LocacaoService locacaoService;
 
     @Rule
     public ErrorCollector error = new ErrorCollector();
@@ -115,12 +121,13 @@ public class LocacaoServiceTest {
         service.alugarFilme(usuario, filmes);
     }
 
+
+
+
     //
 
 
     /* 1. Testes de Criação de Locação
-
-    Deve permitir que um usuário alugue um filme disponível.
 
     Deve registrar a data correta de início e fim da locação.
 
