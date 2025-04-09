@@ -7,10 +7,12 @@ import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.UsuarioInvalidoException;
 import org.example.utils.SPCService;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,6 +34,13 @@ public class LocacaoServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    @Before
+    public void setup() {
+        locacaoDao = Mockito.mock(LocacaoDao.class);
+        spcService = Mockito.mock(SPCService.class);
+        locacaoService = new LocacaoService(locacaoDao, spcService);
+    }
+
     @Test
     public void alugaFilmesComSucessoTest() {
         // Cenário
@@ -43,7 +52,6 @@ public class LocacaoServiceTest {
                 new Filme("A Origem", 14, 22.0)
         ));
         Usuario usuario = new Usuario("Raffael", "1234567890");
-        LocacaoService locacaoService = new LocacaoService();
 
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
@@ -63,7 +71,6 @@ public class LocacaoServiceTest {
                 new Filme("A Origem", 14, 22.0)
         ));
         Usuario usuario = new Usuario("Raffael", "1234567890");
-        LocacaoService locacaoService = new LocacaoService();
 
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
@@ -76,29 +83,28 @@ public class LocacaoServiceTest {
     @Test
     public void deveLancarExcecaoQuandoUsuarioForInvalido() {
         // Cenário: Usuario invalido
-        Set<Filme> filmes = Set.of(new Filme("O Poderoso Chefão", 16, 25.0));
-        LocacaoService service = new LocacaoService();
+        Set<Filme> filmes = new HashSet<>();
+        filmes.add(new Filme("O Poderoso Chefão", 16, 25.0));
 
         // Configura a exceção esperada e a mensagem
         exception.expect(UsuarioInvalidoException.class);
         exception.expectMessage("Usuario invalido!");
 
         // Ação: Deve lançar a exceção configurada
-        service.alugarFilme(null, filmes);
+        locacaoService.alugarFilme(null, filmes);
     }
 
     @Test
-    public void deveLancarExcecaoQuandoListaDeFilmesForNulaOuVazia (){
+    public void deveLancarExcecaoQuandoListaDeFilmesForNulaOuVazia() {
         // Cenário: Usuario invalido
         Usuario usuario = new Usuario("Raffael", "1234567890");
-        LocacaoService service = new LocacaoService();
 
         // Configura a exceção esperada e a mensagem
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("A lista de filmes não pode estar vazia.");
 
         // Ação: Deve lançar a exceção configurada
-        service.alugarFilme(usuario, null);
+        locacaoService.alugarFilme(usuario, null);
     }
 
     @Test
@@ -112,16 +118,13 @@ public class LocacaoServiceTest {
                 new Filme("A Origem", 14, 22.0)
         ));
         Usuario usuario = new Usuario("Raffael", "1234567890");
-        LocacaoService service = new LocacaoService();
 
         // Configuração da exceção esperada
         exception.expect(FilmeSemEstoqueException.class);
 
         // Ação: Deve lançar a exceção configurada
-        service.alugarFilme(usuario, filmes);
+        locacaoService.alugarFilme(usuario, filmes);
     }
-
-
 
 
     //
