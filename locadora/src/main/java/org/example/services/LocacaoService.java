@@ -42,19 +42,23 @@ public class LocacaoService {
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
 
+		//Entrega no dia seguinte
+		Date dataEntrega = new Date();
+		dataEntrega = adicionarDias(dataEntrega, 1); // TODO se for num domingo, deve colocar pra segunda
+		locacao.setDataRetorno(dataEntrega);
+
 		// Aplica desconto no valor total da locação com base no número de filmes alugados
 		locacao.setValor(calculaValorComDesconto(filmes));
 
-		//Entrega no dia seguinte
-		Date dataEntrega = new Date();
-		dataEntrega = adicionarDias(dataEntrega, 1);
-		locacao.setDataRetorno(dataEntrega);
-		
 		//Salvar locacao
 		locacaoDao.salva(locacao);
 
 		return locacao;
 	}
+
+
+	// TODO: Não deve aplicar multa se a devolução for feita dentro do prazo
+	// Um novo metodo para devolução// deve receber uma locação ?
 
 
 	private double calculaValorComDesconto(Set<Filme> filmes){

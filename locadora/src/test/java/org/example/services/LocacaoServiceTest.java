@@ -12,7 +12,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,8 +26,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LocacaoServiceTest {
 
+    @Mock
     private LocacaoDao locacaoDao;
+
+    @Mock
     private SPCService spcService;
+
+    @InjectMocks
     private LocacaoService locacaoService;
 
     @Rule
@@ -36,9 +43,7 @@ public class LocacaoServiceTest {
 
     @Before
     public void setup() {
-        locacaoDao = Mockito.mock(LocacaoDao.class);
-        spcService = Mockito.mock(SPCService.class);
-        locacaoService = new LocacaoService(locacaoDao, spcService);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -126,30 +131,19 @@ public class LocacaoServiceTest {
         locacaoService.alugarFilme(usuario, filmes);
     }
 
+//     Deve definir corretamente a data de devolução com base no tipo de filme (ex: filmes normais têm 3 dias, lançamentos têm 1 dia).
 
-    //
+    //      domingo nao funciona, então a devolução nao pode ser no domingo
+
+    //     Não deve aplicar multa se a devolução for feita dentro do prazo.
+
+    // Deve registrar corretamente a devolução de um filme. // algum atributo boleano que valide a entrega ?
+
+    //      Deve calcular multa corretamente caso a devolução ocorra após a data prevista. // cria
+    // uma entidade para multa e associa ao usuario// pode ate se relacionar o o spc service
 
 
-    /* 1. Testes de Criação de Locação
+    //     Deve permitir que um usuário com histórico limpo alugue um novo filme.// pode ser controlado por mockito
 
-    Deve registrar a data correta de início e fim da locação.
-
-2. Testes de Regras de Negócio
-    Deve definir corretamente a data de devolução com base no tipo de filme (ex: filmes normais têm 3 dias, lançamentos têm 1 dia).
-
-     Deve impedir que um usuário alugue um filme caso tenha locações pendentes ou atrasadas.
-
-    Deve permitir que um usuário com histórico limpo alugue um novo filme.
-
-3. Testes de Devolução e Multas
-      domingo nao funciona
-
-     Deve calcular multa corretamente caso a devolução ocorra após a data prevista.
-
-     Deve registrar corretamente a devolução de um filme.
-
-    Não deve aplicar multa se a devolução for feita dentro do prazo.
-
-*/
 
 }
