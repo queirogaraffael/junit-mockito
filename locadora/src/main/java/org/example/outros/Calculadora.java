@@ -27,4 +27,8 @@ public class Calculadora {
         return numero1 * numero2;
     }
 
+    public void imprimirResultado(Double resultado){
+        System.out.println(resultado);
+    }
+
 }
