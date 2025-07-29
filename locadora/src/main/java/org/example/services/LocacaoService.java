@@ -51,7 +51,7 @@ public class LocacaoService {
 		locacao.setValor(calculaValorComDesconto(filmes));
 
 		//Salvar locacao
-		locacaoDao.salva(locacao);
+		locacaoDao.salvar(locacao);
 
 		return locacao;
 	}
