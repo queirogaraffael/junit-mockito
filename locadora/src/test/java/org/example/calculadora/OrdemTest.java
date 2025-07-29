@@ -1,4 +1,4 @@
-package org.example.outros;
+package org.example.calculadora;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;

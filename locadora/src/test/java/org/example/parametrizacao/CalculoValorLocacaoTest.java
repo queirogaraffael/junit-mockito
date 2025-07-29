@@ -1,4 +1,4 @@
-package org.example.outros;
+package org.example.parametrizacao;
 
 public class CalculoValorLocacaoTest {
 }

@@ -1,6 +1,7 @@
-package org.example.outros;
+package org.example.calculadora;
 
 import org.example.exceptions.NaoPodeDividirPorZeroException;
+import org.example.outros.Calculadora;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

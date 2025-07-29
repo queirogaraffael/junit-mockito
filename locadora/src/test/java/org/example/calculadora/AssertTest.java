@@ -1,4 +1,4 @@
-package org.example.outros;
+package org.example.calculadora;
 
 import org.example.entities.Usuario;
 import org.junit.Assert;
