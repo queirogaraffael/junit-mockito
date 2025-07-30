@@ -6,7 +6,6 @@ import org.example.entities.Locacao;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.UsuarioInvalidoException;
-import org.example.utils.SPCService;
 
 import java.util.Date;
 import java.util.Set;

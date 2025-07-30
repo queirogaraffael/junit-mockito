@@ -7,7 +7,6 @@ import org.example.entities.Locacao;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.UsuarioInvalidoException;
-import org.example.utils.SPCService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
