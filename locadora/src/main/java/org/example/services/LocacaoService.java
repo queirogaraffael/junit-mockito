@@ -3,126 +3,140 @@ package org.example.services;
 import org.example.daos.LocacaoDao;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
+import org.example.entities.Multa;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.ListaDeFilmesVaziaException;
 import org.example.exceptions.UsuarioInvalidoException;
 import org.example.exceptions.UsuarioNegativadoSPC;
+import org.example.utils.DataUtils;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.example.utils.DataUtils.adicionarDias;
-
 public class LocacaoService {
 
-	private LocacaoDao locacaoDao;
-	private SPCService spcService;
+    private LocacaoDao locacaoDao;
+    private SPCService spcService;
 
-	public LocacaoService(LocacaoDao locacaoDao, SPCService spcService) {
-		this.locacaoDao = locacaoDao;
-		this.spcService = spcService;
-	}
+    private Double valorBaseMulta = 10.0;
 
-	public Locacao alugarFilme(Usuario usuario, Set<Filme> filmes) {
+    public LocacaoService(LocacaoDao locacaoDao, SPCService spcService) {
+        this.locacaoDao = locacaoDao;
+        this.spcService = spcService;
+    }
 
-		if(usuario == null){
-			throw new UsuarioInvalidoException("Usuario invalido!");
-		}
+    public Locacao alugarFilme(Usuario usuario, Set<Filme> filmes) {
 
-		if(filmes == null || filmes.isEmpty()){
-			throw new ListaDeFilmesVaziaException("A lista de filmes não pode estar vazia.");
-		}
+        if (usuario == null) {
+            throw new UsuarioInvalidoException("Usuario invalido!");
+        }
 
-
-		boolean usuarioEhNetivado = spcService.possuiNegativacao(usuario);
-
-		if(usuarioEhNetivado){
-			throw new UsuarioNegativadoSPC("Usuário negativado pelo SPC");
-		}
+        if (filmes == null || filmes.isEmpty()) {
+            throw new ListaDeFilmesVaziaException("A lista de filmes não pode estar vazia.");
+        }
 
 
-		// Valida se ha estoque para o(s) filme(s)
-		validaSeHaEstoque(filmes);
+        boolean usuarioEhNetivado = spcService.possuiNegativacao(usuario);
 
-		Locacao locacao = new Locacao();
-		locacao.setFilmes(filmes);
-		locacao.setUsuario(usuario);
-		locacao.setDataLocacao(new Date());
+        if (usuarioEhNetivado) {
+            throw new UsuarioNegativadoSPC("Usuário negativado pelo SPC");
+        }
 
+        // Valida se ha estoque para o(s) filme(s)
+        validaSeHaEstoque(filmes);
 
+        Locacao locacao = new Locacao();
+        locacao.setFilmes(filmes);
+        locacao.setUsuario(usuario);
+        locacao.setDataLocacao(new Date());
 
+        //Entrega no dia seguinte
+        Date dataEntrega = DataUtils.obterDataDeRetorno(2);
+        locacao.setDataRetorno(dataEntrega);
 
+        // Aplica desconto no valor total da locação com base no número de filmes alugados
+        locacao.setValor(calculaValorComDesconto(filmes));
 
+        //Salvar locacao
+        locacaoDao.salvar(locacao);
 
-		//Entrega no dia seguinte
-		Date dataEntrega = new Date();
-		dataEntrega = adicionarDias(dataEntrega, 1); // TODO se for num domingo, deve colocar pra segunda
-		locacao.setDataRetorno(dataEntrega);
-
-
-
-
-
-
-
-		// Aplica desconto no valor total da locação com base no número de filmes alugados
-		locacao.setValor(calculaValorComDesconto(filmes));
-
-		//Salvar locacao
-		locacaoDao.salvar(locacao);
-
-		return locacao;
-	}
+        return locacao;
+    }
 
 
-	// TODO: Não deve aplicar multa se a devolução for feita dentro do prazo
-	// Um novo metodo para devolução// deve receber uma locação ?
+    public Optional<Multa> devolverLocacao(Locacao locacao) {
+
+        if (houveAtraso(locacao)) {
+            double valorMulta = calculaValorMulta(locacao);
+
+            Multa multa = new Multa(valorMulta);
+
+            locacao.getUsuario().setMulta(multa);
+
+            return Optional.of(multa);
+        }
+
+        return Optional.empty();
+    }
+
+    public void prorrogarLocacao(Locacao locacao, int numeroDeDiasParaProrrogar) {
+
+        Date novaDataDeRetorno = DataUtils.obterDataDeRetorno(numeroDeDiasParaProrrogar);
+
+        locacao.setDataRetorno(novaDataDeRetorno);
+
+        locacaoDao.salvar(locacao);
+    }
+
+    private double calculaValorMulta(Locacao locacao) {
+
+        int numeroDeDomingos = DataUtils.quantosDiasHa(Calendar.SUNDAY, locacao.getDataLocacao(), locacao.getDataRetorno());
+
+        long numeroDeDiasValidosLocacao = DataUtils.calculaDiferencaDeDias(locacao.getDataLocacao(), locacao.getDataRetorno()) - numeroDeDomingos;
+
+        return valorBaseMulta * numeroDeDiasValidosLocacao;
+
+    }
+
+    private double calculaValorComDesconto(Set<Filme> filmes) {
+
+        double total = filmes.stream().mapToDouble(Filme::getPrecoLocacao).sum();
+
+        double desconto;
+
+        if (filmes.size() >= 5) {
+            desconto = 0.5;
+        } else if (filmes.size() == 4) {
+            desconto = 0.6;
+        } else if (filmes.size() == 3) {
+            desconto = 0.7;
+        } else if (filmes.size() == 2) {
+            desconto = 0.8;
+        } else {
+            desconto = 1;
+        }
+
+        return total * desconto;
+    }
+
+    private void validaSeHaEstoque(Set<Filme> filmes) {
+        Set<Filme> filmesSemEstoque = filmes.stream()
+                .filter(filme -> filme.getEstoque() == 0)
+                .collect(Collectors.toSet());
+
+        if (!filmesSemEstoque.isEmpty()) {
+            throw new FilmeSemEstoqueException("Os seguintes filmes estão sem estoque: "
+                    + filmesSemEstoque.stream().map(Filme::getNome).collect(Collectors.joining(", ")));
+        }
+    }
 
 
-	public void devolucaoLocacao(Locacao locacao){
-
-		// verificar se houve atraso
-		// se houver, calcula a muta e aplica
-
-		// cria multa pro usuario(entidade)
-
-
-
-	}
-
-
-	private double calculaValorComDesconto(Set<Filme> filmes){
-
-		double total = filmes.stream().mapToDouble(Filme::getPrecoLocacao).sum();
-
-		double desconto;
-
-		if(filmes.size() >= 5){
-			desconto = 0.5;
-		}else if(filmes.size() == 4){
-			desconto = 0.6;
-		}else if(filmes.size() == 3){
-			desconto = 0.7;
-		}else if(filmes.size() == 2){
-			desconto = 0.8;
-		}else {
-			desconto = 1;
-		}
-
-		return total * desconto;
-	}
-
-	private void validaSeHaEstoque(Set<Filme> filmes) {
-		Set<Filme> filmesSemEstoque = filmes.stream()
-				.filter(filme -> filme.getEstoque() == 0)
-				.collect(Collectors.toSet());
-
-		if (!filmesSemEstoque.isEmpty()) {
-			throw new FilmeSemEstoqueException("Os seguintes filmes estão sem estoque: "
-					+ filmesSemEstoque.stream().map(Filme::getNome).collect(Collectors.joining(", ")));
-		}
-	}
+    private boolean houveAtraso(Locacao locacao) {
+        return locacao.getDataRetorno().before(new Date());
+    }
 
 }

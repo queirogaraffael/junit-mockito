@@ -6,10 +6,11 @@ public class Usuario {
 
 	private String nome;
 	private String cpf;
-	
+	private Multa multa;
+
 	public Usuario() {
 	}
-	
+
 	public Usuario(String nome, String cpf) {
 		this.nome = nome;
 		this.cpf = cpf;
@@ -29,6 +30,14 @@ public class Usuario {
 
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
+	}
+
+	public Multa getMulta() {
+		return multa;
+	}
+
+	public void setMulta(Multa multa) {
+		this.multa = multa;
 	}
 
 	@Override

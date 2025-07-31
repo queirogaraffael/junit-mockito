@@ -142,8 +142,6 @@ public class LocacaoServiceTest {
 
 
     // deveDevolverNaSegundaAoAlugarNoSabado // domingo nao funciona
-    // deveEnviarEmailParaLocacoesAtrasadas
-    // deveTratarErronoSPC
     // deveProrrogarUmaLocacao
     // Deve aplicar multa se devolução for feita fora do prazo(coloca no spc)
     // deve aplicar multa corretamente
