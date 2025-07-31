@@ -77,7 +77,6 @@ public class DataUtils {
         return contador;
     }
 
-    // numero de dias
 
     public static long calculaDiferencaDeDias(Date dataInicial, Date dataFinal){
         long diffEmMillis = dataFinal.getTime() - dataInicial.getTime();

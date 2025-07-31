@@ -4,11 +4,14 @@ import org.example.builders.UsuarioBuilder;
 import org.example.daos.LocacaoDao;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
+import org.example.entities.Multa;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.ListaDeFilmesVaziaException;
 import org.example.exceptions.UsuarioInvalidoException;
 import org.example.exceptions.UsuarioNegativadoSPC;
+import org.example.utils.DataUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,9 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -140,11 +141,49 @@ public class LocacaoServiceTest {
         locacaoService.alugarFilme(usuario, filmes);
     }
 
+    @Test
+    public void deveProrrogarUmaLocacao(){
+        // Cenário
+        Usuario usuario = new Usuario("Raffael", "1234567890");
+        Set<Filme> filmes = new HashSet<>(Arrays.asList(new Filme("Filme 1", 2, 4.0)));
 
-    // deveDevolverNaSegundaAoAlugarNoSabado // domingo nao funciona
-    // deveProrrogarUmaLocacao
-    // Deve aplicar multa se devolução for feita fora do prazo(coloca no spc)
-    // deve aplicar multa corretamente
+        Date dataInicial = new Date();
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        // Ação
+        Locacao locacaoComDataRetornoAlterada = locacaoService.prorrogarLocacao(locacao, 4);
+
+        // Validação
+        Date dataEsperada = DataUtils.adicionarDias(dataInicial, 4);
+        Assert.assertTrue(DataUtils.isMesmaData(dataEsperada, locacaoComDataRetornoAlterada.getDataRetorno()));
+    }
+
+    @Test
+    public void deveAplicarMultaCorretamente() {
+        // Cenário
+        Usuario usuario = new Usuario("Raffael", "1234567890");
+        Set<Filme> filmes = new HashSet<>(Arrays.asList(
+                new Filme("Filme 1", 2, 4.0)
+        ));
+
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        Date dataLocacao = DataUtils.obterDataComDiferencaDias(-3);
+        Date dataRetornoAtrasada = DataUtils.obterDataComDiferencaDias(-1);
+
+        locacao.setDataLocacao(dataLocacao);
+        locacao.setDataRetorno(dataRetornoAtrasada);
+
+        // Ação
+        Optional<Multa> multa = locacaoService.devolverLocacao(locacao);
+
+        // Validação
+        Assert.assertTrue("A multa deveria estar presente", multa.isPresent());
+        Assert.assertEquals("Valor da multa incorreto",
+                locacao.getUsuario().getMulta().getValor(),
+                multa.get().getValor(),
+                0.01);
+    }
 
 
 }

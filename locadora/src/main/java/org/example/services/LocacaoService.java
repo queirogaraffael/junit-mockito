@@ -83,13 +83,15 @@ public class LocacaoService {
         return Optional.empty();
     }
 
-    public void prorrogarLocacao(Locacao locacao, int numeroDeDiasParaProrrogar) {
+    public Locacao prorrogarLocacao(Locacao locacao, int numeroDeDiasParaProrrogar) {
 
         Date novaDataDeRetorno = DataUtils.obterDataDeRetorno(numeroDeDiasParaProrrogar);
 
         locacao.setDataRetorno(novaDataDeRetorno);
 
         locacaoDao.salvar(locacao);
+
+        return locacao;
     }
 
     private double calculaValorMulta(Locacao locacao) {
@@ -98,7 +100,7 @@ public class LocacaoService {
 
         long numeroDeDiasValidosLocacao = DataUtils.calculaDiferencaDeDias(locacao.getDataLocacao(), locacao.getDataRetorno()) - numeroDeDomingos;
 
-        return valorBaseMulta * numeroDeDiasValidosLocacao;
+        return valorBaseMulta * numeroDeDiasValidosLocacao + locacao.getValor();
 
     }
 
