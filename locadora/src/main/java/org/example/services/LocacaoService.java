@@ -5,7 +5,9 @@ import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
+import org.example.exceptions.ListaDeFilmesVaziaException;
 import org.example.exceptions.UsuarioInvalidoException;
+import org.example.exceptions.UsuarioNegativadoSPC;
 
 import java.util.Date;
 import java.util.Set;
@@ -30,8 +32,16 @@ public class LocacaoService {
 		}
 
 		if(filmes == null || filmes.isEmpty()){
-			throw new IllegalArgumentException("A lista de filmes não pode estar vazia.");
+			throw new ListaDeFilmesVaziaException("A lista de filmes não pode estar vazia.");
 		}
+
+
+		boolean usuarioEhNetivado = spcService.possuiNegativacao(usuario);
+
+		if(usuarioEhNetivado){
+			throw new UsuarioNegativadoSPC("Usuário negativado pelo SPC");
+		}
+
 
 		// Valida se ha estoque para o(s) filme(s)
 		validaSeHaEstoque(filmes);
@@ -41,10 +51,21 @@ public class LocacaoService {
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
 
+
+
+
+
+
 		//Entrega no dia seguinte
 		Date dataEntrega = new Date();
 		dataEntrega = adicionarDias(dataEntrega, 1); // TODO se for num domingo, deve colocar pra segunda
 		locacao.setDataRetorno(dataEntrega);
+
+
+
+
+
+
 
 		// Aplica desconto no valor total da locação com base no número de filmes alugados
 		locacao.setValor(calculaValorComDesconto(filmes));
@@ -58,6 +79,18 @@ public class LocacaoService {
 
 	// TODO: Não deve aplicar multa se a devolução for feita dentro do prazo
 	// Um novo metodo para devolução// deve receber uma locação ?
+
+
+	public void devolucaoLocacao(Locacao locacao){
+
+		// verificar se houve atraso
+		// se houver, calcula a muta e aplica
+
+		// cria multa pro usuario(entidade)
+
+
+
+	}
 
 
 	private double calculaValorComDesconto(Set<Filme> filmes){

@@ -27,7 +27,7 @@ public class LocacaoBuilder {
         builder.locacao.setDataLocacao(new Date());
         builder.locacao.setDataRetorno(DataUtils.obterDataComDiferencaDias(2));
         builder.locacao.setValor(4.0);
-        builder.locacao.setFilmes(new HashSet<>(Arrays.asList(FilmeBuilder.umFilme().agora())));
+        builder.locacao.setFilmes(new HashSet<>(Arrays.asList(FilmeBuilder.umFilme().build())));
     }
 
     public LocacaoBuilder comUsuario(Usuario usuario) {

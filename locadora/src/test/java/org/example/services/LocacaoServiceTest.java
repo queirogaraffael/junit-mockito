@@ -1,11 +1,14 @@
 package org.example.services;
 
+import org.example.builders.UsuarioBuilder;
 import org.example.daos.LocacaoDao;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
+import org.example.exceptions.ListaDeFilmesVaziaException;
 import org.example.exceptions.UsuarioInvalidoException;
+import org.example.exceptions.UsuarioNegativadoSPC;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +16,7 @@ import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
@@ -80,38 +84,31 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         // Validações
-
         assertThat("O valor da locação está incorreto", locacao.getValor(), is(37.6));
     }
 
-    @Test
+    @Test(expected = UsuarioInvalidoException.class)
     public void deveLancarExcecaoQuandoUsuarioForInvalido() {
+
         // Cenário: Usuario invalido
         Set<Filme> filmes = new HashSet<>();
         filmes.add(new Filme("O Poderoso Chefão", 16, 25.0));
 
-        // Configura a exceção esperada e a mensagem
-        exception.expect(UsuarioInvalidoException.class);
-        exception.expectMessage("Usuario invalido!");
-
         // Ação: Deve lançar a exceção configurada
         locacaoService.alugarFilme(null, filmes);
+
     }
 
-    @Test
+    @Test(expected = ListaDeFilmesVaziaException.class)
     public void deveLancarExcecaoQuandoListaDeFilmesForNulaOuVazia() {
-        // Cenário: Usuario invalido
+        // Cenário: Apenas usuario valido
         Usuario usuario = new Usuario("Raffael", "1234567890");
-
-        // Configura a exceção esperada e a mensagem
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("A lista de filmes não pode estar vazia.");
 
         // Ação: Deve lançar a exceção configurada
         locacaoService.alugarFilme(usuario, null);
     }
 
-    @Test
+    @Test(expected = FilmeSemEstoqueException.class)
     public void deveLancarExcecaoQuandoHouverFilmesSemEstoque() {
         // Cenário: Criação do conjunto de filmes, incluindo alguns sem estoque
         Set<Filme> filmes = new HashSet<>(Arrays.asList(
@@ -123,37 +120,33 @@ public class LocacaoServiceTest {
         ));
         Usuario usuario = new Usuario("Raffael", "1234567890");
 
-        // Configuração da exceção esperada
-        exception.expect(FilmeSemEstoqueException.class);
-
         // Ação: Deve lançar a exceção configurada
         locacaoService.alugarFilme(usuario, filmes);
     }
 
-//     Deve definir corretamente a data de devolução com base no tipo de filme (ex: filmes normais têm 3 dias, lançamentos têm 1 dia).
 
-    //      domingo nao funciona, então a devolução nao pode ser no domingo
+    @Test(expected = UsuarioNegativadoSPC.class)
+    public void naoDeveAlugarFilmeParaNegativadoSPC(){
 
-    //     Não deve aplicar multa se a devolução for feita dentro do prazo.
+        // Cenário
+        Usuario usuario = UsuarioBuilder.umUsuario().agora();
+        Set<Filme> filmes = new HashSet<>(Arrays.asList(
+           new Filme("Filme 1", 2, 4.0),
+                new Filme("Filme 2", 2, 4.0)));
 
-    // Deve registrar corretamente a devolução de um filme. // algum atributo boleano que valide a entrega ?
+        Mockito.when(spcService.possuiNegativacao(usuario)).thenReturn(true);
 
-    //      Deve calcular multa corretamente caso a devolução ocorra após a data prevista. // cria
-    // uma entidade para multa e associa ao usuario// pode ate se relacionar o o spc service
-
-
-    //     Deve permitir que um usuário com histórico limpo alugue um novo filme.// pode ser controlado por mockito
+        // Ação
+        locacaoService.alugarFilme(usuario, filmes);
+    }
 
 
-
-    // naoDeveAlugarFilmeSemEstoque
-    // naoDeveAlugarFilmeSemUsuario
-    // naoDeveAlugarFilmeSemFilme
-    // deveDevolverNaSegundaAoAlugarNoSabado
-    // naoDeveAlugarFilmeParaNegativadoSPC
+    // deveDevolverNaSegundaAoAlugarNoSabado // domingo nao funciona
     // deveEnviarEmailParaLocacoesAtrasadas
     // deveTratarErronoSPC
     // deveProrrogarUmaLocacao
-    // deveCalcularValorLocacao
+    // Deve aplicar multa se devolução for feita fora do prazo(coloca no spc)
+    // deve aplicar multa corretamente
+
 
 }
