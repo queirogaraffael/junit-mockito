@@ -2,6 +2,8 @@ package org.example.builders;
 
 import org.example.entities.Filme;
 
+// Apos uma longa investigação, descobri que o FilmeBuilder tem apresentado problemas
+// Até o momento não consegui descobrir o que tem causado o erro, mas sei que se encontra nessa classe.
 public class FilmeBuilder {
 
     private Filme filme;

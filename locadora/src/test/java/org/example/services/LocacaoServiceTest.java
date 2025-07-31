@@ -1,6 +1,5 @@
 package org.example.services;
 
-import org.example.builders.UsuarioBuilder;
 import org.example.daos.LocacaoDao;
 import org.example.entities.Filme;
 import org.example.entities.Locacao;
@@ -146,8 +145,15 @@ public class LocacaoServiceTest {
     //     Deve permitir que um usuário com histórico limpo alugue um novo filme.// pode ser controlado por mockito
 
 
-    Usuario usuario = UsuarioBuilder.umUsuario().comNomeDe("Nome usuario").agora();
 
-    Usuario usuario1 = UsuarioBuilder.umUsuario().comNomeDe("Nome usuario").agora();
+    // naoDeveAlugarFilmeSemEstoque
+    // naoDeveAlugarFilmeSemUsuario
+    // naoDeveAlugarFilmeSemFilme
+    // deveDevolverNaSegundaAoAlugarNoSabado
+    // naoDeveAlugarFilmeParaNegativadoSPC
+    // deveEnviarEmailParaLocacoesAtrasadas
+    // deveTratarErronoSPC
+    // deveProrrogarUmaLocacao
+    // deveCalcularValorLocacao
 
 }

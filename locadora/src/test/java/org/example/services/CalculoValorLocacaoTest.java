@@ -1,4 +1,4 @@
-package org.example.parametrizacao;
+package org.example.services;
 
 import org.example.builders.FilmeBuilder;
 import org.example.builders.UsuarioBuilder;
@@ -8,8 +8,6 @@ import org.example.entities.Locacao;
 import org.example.entities.Usuario;
 import org.example.exceptions.FilmeSemEstoqueException;
 import org.example.exceptions.LocadoraException;
-import org.example.services.LocacaoService;
-import org.example.services.SPCService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,12 +47,12 @@ public class CalculoValorLocacaoTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    private static Filme filme1 = FilmeBuilder.umFilme().agora();
-    private static Filme filme2 = FilmeBuilder.umFilme().agora();
-    private static Filme filme3 = FilmeBuilder.umFilme().agora();
-    private static Filme filme4 = FilmeBuilder.umFilme().agora();
-    private static Filme filme5 = FilmeBuilder.umFilme().agora();
-    private static Filme filme6 = FilmeBuilder.umFilme().agora();
+    private static Filme filme1 = new Filme("Filme 1", 10, 4.0);
+    private static Filme filme2 = new Filme("Filme 2", 10, 4.0);
+    private static Filme filme3 = new Filme("Filme 3", 10, 4.0);
+    private static Filme filme4 = new Filme("Filme 4", 10, 4.0);
+    private static Filme filme5 = new Filme("Filme 5", 10, 4.0);
+    private static Filme filme6 = new Filme("Filme 6", 10, 4.0);
 
     @Parameters(name="{2}") // Esse 2 diz pros testes qual parametro mostrar, para diferenciar o teste. Nesse caso é o cenário.
     public static Collection<Object[]> getParametros(){
