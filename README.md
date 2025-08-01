@@ -1,6 +1,6 @@
 # 🧪 junit-mockito
 
-Repositório criado com o objetivo de estudar testes automatizados em Java utilizando **JUnit 4**, **Mockito** e ferramentas complementares como **DataBuilders**, **PowerMock** e **MockMvc**.
+Repositório criado com o objetivo de estudar testes automatizados em Java utilizando **JUnit 4**, **Mockito** e ferramentas complementares como **DataBuilders** e **PowerMock**.
 
 ---
 
