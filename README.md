@@ -51,7 +51,7 @@ O projeto é dividido em:
 
 ```bash
 # Clone o projeto
-git clone https://github.com/seu-usuario/junit-mockito.git
+git clone https://github.com/queirogaraffael/junit-mockito.git
 
 # Navegue até o diretório
 cd junit-mockito
