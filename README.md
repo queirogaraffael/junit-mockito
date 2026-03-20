@@ -1,10 +1,10 @@
-# 🧪 junit-mockito
+# junit-mockito
 
 Repositório criado com o objetivo de estudar testes automatizados em Java utilizando **JUnit 4**, **Mockito** e ferramentas complementares como **DataBuilders** e **PowerMock**.
 
 ---
 
-## 🎯 Objetivo
+## Objetivo
 
 Aprofundar o conhecimento sobre testes de unidade e de integração no ecossistema Java, aplicando boas práticas de escrita de testes automatizados em cenários reais, como:
 
@@ -15,7 +15,7 @@ Aprofundar o conhecimento sobre testes de unidade e de integração no ecossiste
 
 ---
 
-## 🛠 Tecnologias e Ferramentas
+## Tecnologias e Ferramentas
 
 - **Java 8**
 - **JUnit 4**: Framework principal de testes unitários  
@@ -25,7 +25,7 @@ Aprofundar o conhecimento sobre testes de unidade e de integração no ecossiste
   
 ---
 
-## 📁 Estrutura
+## Estrutura
 
 O projeto é dividido em:
 
@@ -37,7 +37,7 @@ O projeto é dividido em:
 
 ---
 
-## 📚 Conteúdo Estudado
+## Conteúdo Estudado
 
 - Testes com **JUnit**: estrutura, assertions, exceções  
 - Criação de objetos com **DataBuilder Pattern**  
@@ -47,7 +47,7 @@ O projeto é dividido em:
 
 ---
 
-## 🚀 Como executar
+## Como executar
 
 ```bash
 # Clone o projeto
@@ -60,6 +60,6 @@ cd junit-mockito
 mvn clean test
 ```
 
-## 📌 Observação
+## Observação
 
 Este projeto tem fins exclusivamente educacionais e não possui integração com banco de dados real ou APIs externas.
